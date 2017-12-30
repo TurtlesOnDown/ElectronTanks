@@ -16,13 +16,18 @@ public class playercontroller : NetworkBehaviour
 
     private Rigidbody2D body;
     private Transform position;
+    private Camera mainCamera;
+    private Vector3 offset;
 
     public override void OnStartLocalPlayer()
     {
         body = GetComponent<Rigidbody2D>();
         position = gameObject.GetComponent<Transform>();
-        transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
+        //gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
         Cursor.visible = MouseVisible;
+        mainCamera = Camera.main;
+        Destroy(GetComponent<lightTransparency2D>());
+        Destroy(transform.GetChild(0).GetChild(0).GetComponent<lightTransparency2D>());
     }
 
     // Update is called once per frame
@@ -32,13 +37,19 @@ public class playercontroller : NetworkBehaviour
             return;
         }
 
-        getMovement();
+        cameraFollow();
+        
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             CmdfireBullet();
         }
 	}
+
+    void FixedUpdate()
+    {
+        getMovement();
+    }
 
     void getMovement()
     {
@@ -66,14 +77,18 @@ public class playercontroller : NetworkBehaviour
     [Command]
     void CmdfireBullet()
     {
-        Debug.Log("Fired"); // Fix this next please
         var direction = (bulletSpawn.position - transform.position);
-        var bullet = (GameObject)Instantiate(lightBullet, transform.position + (direction * 2.3f), bulletSpawn.rotation);
+        var bullet = (GameObject)Instantiate(lightBullet, transform.position + (direction * 2.5f), bulletSpawn.rotation);
 
         bullet.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
 
         NetworkServer.Spawn(bullet);
 
         Destroy(bullet, 2.0f);
+    }
+
+    void cameraFollow()
+    {
+        mainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
     }
 }

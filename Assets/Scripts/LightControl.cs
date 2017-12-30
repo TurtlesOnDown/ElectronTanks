@@ -200,6 +200,7 @@ public class LightControl : MonoBehaviour {
         {
             // if collision, push in the collision point
             vertices.Add(new Vector3(target[0].point.x, target[0].point.y, center.z));
+            updateObjectColor(target[0], 1 - (target[0].distance - 2) / (lightRadius - 2));
         }
         // Aim left
         if (colliderCircle.Raycast(left, layerfilter, target, lightRadius) == 0)
@@ -210,6 +211,7 @@ public class LightControl : MonoBehaviour {
         else
         {
             vertices.Add(new Vector3(target[0].point.x, target[0].point.y, center.z));
+            updateObjectColor(target[0], 1 - (target[0].distance - 2) / (lightRadius - 2));
         }
         // Aim Right
         if (colliderCircle.Raycast(right, layerfilter, target, lightRadius) == 0)
@@ -220,6 +222,18 @@ public class LightControl : MonoBehaviour {
         else
         {
             vertices.Add(new Vector3(target[0].point.x, target[0].point.y, center.z));
+            updateObjectColor(target[0], 1 - (target[0].distance - 2)/(lightRadius - 2));
+        }
+    }
+
+    void updateObjectColor(RaycastHit2D target, float intensity)
+    {
+        var hit = target.collider.gameObject;
+        var color = hit.GetComponent<lightTransparency2D>();
+        if (color != null)
+        {
+            color.updateColor(LightColor, intensity);
         }
     }
 }
+
